@@ -59,7 +59,10 @@ DROP TABLE IF EXISTS `user_courses`;
 CREATE TABLE `user_courses` (
   `user_id` INT UNSIGNED NOT NULL,
   `course_id` INT UNSIGNED NOT NULL,
+  `grade` VARCHAR(2) NOT NULL,
   PRIMARY KEY (`user_id`, `course_id`),
+  CONSTRAINT `chk_grade_valid`
+    CHECK (`grade` IN ('2','3','4','5','A','MA')),
   CONSTRAINT `fk_usercourses_user`
     FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
     ON DELETE CASCADE,
@@ -75,7 +78,6 @@ DROP TABLE IF EXISTS `user_grades`;
 CREATE TABLE `user_grades` (
   `user_id` INT UNSIGNED NOT NULL,
   `course_id` INT UNSIGNED NOT NULL,
-  `grade` DECIMAL(5,2) NOT NULL,
   PRIMARY KEY (`user_id`, `course_id`),
   CONSTRAINT `fk_usergrades_user`
     FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
