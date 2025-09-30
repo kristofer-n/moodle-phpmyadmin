@@ -8,7 +8,7 @@ START TRANSACTION;
 SET time_zone = "+00:00";
 
 CREATE DATABASE IF NOT EXISTS `moodle`
-  DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+  DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `moodle`;
 
 -- --------------------------------------------------------
@@ -59,30 +59,14 @@ DROP TABLE IF EXISTS `user_courses`;
 CREATE TABLE `user_courses` (
   `user_id` INT UNSIGNED NOT NULL,
   `course_id` INT UNSIGNED NOT NULL,
-  `grade` VARCHAR(2) NOT NULL,
+  `grade` VARCHAR(2) NULL,
   PRIMARY KEY (`user_id`, `course_id`),
   CONSTRAINT `chk_grade_valid`
-    CHECK (`grade` IN ('2','3','4','5','A','MA')),
+    CHECK (`grade` IS NULL OR `grade` IN ('2','3','4','5','A','MA')),
   CONSTRAINT `fk_usercourses_user`
     FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
     ON DELETE CASCADE,
   CONSTRAINT `fk_usercourses_course`
-    FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`)
-    ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
--- User grades
--- --------------------------------------------------------
-DROP TABLE IF EXISTS `user_grades`;
-CREATE TABLE `user_grades` (
-  `user_id` INT UNSIGNED NOT NULL,
-  `course_id` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`user_id`, `course_id`),
-  CONSTRAINT `fk_usergrades_user`
-    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-    ON DELETE CASCADE,
-  CONSTRAINT `fk_usergrades_course`
     FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`)
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
