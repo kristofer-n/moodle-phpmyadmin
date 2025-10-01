@@ -12,3 +12,7 @@ Juhised kuidas käivitada "bulk_fill_moodle.py" faili ning täita "moodle" andme
 
 
 NB! Kui katsetasin skripti, siis juhtus mul, et Windows ei tuvastanud, et Python oli olemas ning pidin Pythoni uuesti paigaldama läbi Microsoft Store äppi kaudu. Lisaks oli probleeme, et Windows ei pannud automaatselt MySQL ega Pythonit PATH'i, kuid ma kahtlen, et see on eriti vajalik.
+PATH muutmiseks Windows platformil _(AINULT KUI KASUTAB SKRIPTI JA SQL FAILI WINDOWS PLATFORMIL)_, peab kasutama **Win + R** ning sisestama **sysdm.cpl**, see avab System Properties akna. Sealt edasi peab minema Advanced kaardi alla ning vajutama **Environment Variables** nupule ja valima Path, siis vajutama **Edit**, kuhu saab lisada faili teekonna kus asuvad mõlemad Python ja MySQL.
+_Näited mõlema jaoks:
+    Python - C:\Users\SinuNimi\AppData\Local\Programs\Python\Python313
+    MySQL  - C:\Program Files\MariaDB 10.4\bin_
