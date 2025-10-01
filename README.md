@@ -7,5 +7,8 @@ Juhised kuidas käivitada "bulk_fill_moodle.py" faili ning täita "moodle" andme
     2.3. Kasuta käsku "USE moodle;", et minna "moodle" andmebaasi.
     2.4. Kontrolliks kasuta käsku "SHOW TABLES;", et näha andmebaasis olevaid tabeleid.
 3. Veendu, et Pythonil on alla laetud mõlemad _faker_ ja _mysql.connector_. Nende jaoks saab kasutada: python -m pip install faker ja python -m pip install mysql-connector-python
-4. Kui eelnevad etapid on õigesti läbitud, siis saab käivitada skripti puhtas Command Prompt aknas (cmd), kasutades käsku: "python bulk_fill_moodle.py", **_ennem oleks vaja liigutada oma asukohta terminalis kohta kus sul skript asub (näiteks: "C:/Users/SinuNimi/Downloads;")_**
+4. Kui eelnevad etapid on õigesti läbitud, siis saab käivitada skripti puhtas Command Prompt aknas (cmd), kasutades käsku: "python bulk_fill_moodle.py", **_ennem oleks vaja liigutada oma asukohta terminalis cd'ga kohta kus sul skript asub (näiteks: "C:/Users/SinuNimi/Downloads")_**
 5. Skript teeb suurem osa asjadest nähtamatult (peale users osa), kui on valmis siis skript ise annab raporti tulemustest, et mitu rida sai tehtud jne.
+
+
+NB! Kui katsetasin skripti, siis juhtus mul, et Windows ei tuvastanud, et Python oli olemas ning pidin Pythoni uuesti paigaldama läbi Microsoft Store äppi kaudu. Lisaks oli probleeme, et Windows ei pannud automaatselt MySQL ega Pythonit PATH'i, kuid ma kahtlen, et see on eriti vajalik.
