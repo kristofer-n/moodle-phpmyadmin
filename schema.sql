@@ -1,4 +1,4 @@
--- phpMyAdmin SQL Dump (parandatud)
+-- phpMyAdmin SQL Dump (parandatud ja täiendatud)
 -- versioon: 5.2.1
 -- MariaDB 10.4.32
 
@@ -70,6 +70,13 @@ CREATE TABLE `user_courses` (
     FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`)
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+-- Indeksid JOIN / WHERE tingimuste jaoks
+-- --------------------------------------------------------
+CREATE INDEX idx_usercourses_user_id ON user_courses(user_id);
+CREATE INDEX idx_usercourses_course_id ON user_courses(course_id);
+CREATE INDEX idx_attachments_course_id ON course_attachments(course_id);
 
 SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
