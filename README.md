@@ -1,4 +1,4 @@
-Skript bulk_fill_moodle.py täidab Moodle andmebaasi suuremahuliste testandmetega.
+3Skript bulk_fill_moodle.py täidab Moodle andmebaasi suuremahuliste testandmetega.
 Andmebaas peab sisaldama tabeleid, mis on loodud schema.sql abil.
 
 Skript genereerib:
@@ -30,7 +30,7 @@ Veendu, et failid on konteineris või Linuxi masinas sama kataloogi all.
 ### 3️⃣ MariaDB seadistamine
 1. Käivita MariaDB:
 `sudo systemctl start mariadb`
-või Dockeris: `docker run --name mariadb -e MYSQL_ROOT_PASSWORD=mypassword -d mariadb:10.4`
+või Dockeris: `docker exec -i mariadb mysql -u root -pmypassword -h 127.0.0.1 moodle < schema.sql`
 2. Loo andmebaas ja tabeleid:
    
         mysql -u root -p
