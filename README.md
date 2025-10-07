@@ -40,15 +40,15 @@ või Dockeris: `docker run --name mariadb -e MYSQL_ROOT_PASSWORD=mypassword -d m
 
 4️⃣ Skripti seadistamine
 1. Muuda DB_CONFIG skriptis:
-`DB_CONFIG = {
-    "host": "127.0.0.1",  # MariaDB host või konteineri IP
-    "user": "moodle_user",
-    "password": "mypassword",
-    "database": "moodle",
-    "port": 3306,
-    "autocommit": False,
-    "auth_plugin": "mysql_native_password"
-}`
+`DB_CONFIG = {`
+    `"host": "127.0.0.1",  # MariaDB host või konteineri IP`
+    `"user": "moodle_user",`
+    `"password": "mypassword",`
+    `"database": "moodle",`
+    `"port": 3306,`
+    `"autocommit": False,`
+    `"auth_plugin": "mysql_native_password"`
+`}`
 2. Kui skript käib Docker konteineris, veendu, et failid on konteineris (nt /app):
     `docker cp bulk_fill_moodle.py <container_id>:/app/`
     `docker cp schema.sql <container_id>:/app/`
@@ -60,22 +60,22 @@ Skript töötab partiidena, logib edusammu ja väljastab lõpp-raporti.
 
 6️⃣ Lõppkontrollid
 1. Ridade arvud:
-    `SELECT COUNT(*) FROM courses;
-    SELECT COUNT(*) FROM users;
-    SELECT COUNT(*) FROM course_attachments;
-    SELECT COUNT(*) FROM user_courses;`
+    `SELECT COUNT(*) FROM courses;`
+    `SELECT COUNT(*) FROM users;`
+    `SELECT COUNT(*) FROM course_attachments;`
+    `SELECT COUNT(*) FROM user_courses;`
 2. FK tervikluse kontroll:
-    `SELECT COUNT(*) FROM course_attachments ca
-    LEFT JOIN courses c ON ca.course_id = c.id
-    WHERE c.id IS NULL;`
+    `SELECT COUNT(*) FROM course_attachments ca`
+    `LEFT JOIN courses c ON ca.course_id = c.id`
+    `WHERE c.id IS NULL;`
 
-    `SELECT COUNT(*) FROM user_courses uc
-    LEFT JOIN users u ON uc.user_id = u.id
-    WHERE u.id IS NULL;`
+    `SELECT COUNT(*) FROM user_courses uc`
+    `LEFT JOIN users u ON uc.user_id = u.id`
+    `WHERE u.id IS NULL;`
 
-    `SELECT COUNT(*) FROM user_courses uc
-    LEFT JOIN courses c ON uc.course_id = c.id
-    WHERE c.id IS NULL;`
+    `SELECT COUNT(*) FROM user_courses uc`
+    `LEFT JOIN courses c ON uc.course_id = c.id`
+    `WHERE c.id IS NULL;`
 3. Ehtsus:
     Nimede ja e-mailide formaat kontrollitud Fakeriga
     Grades: 60% NULL, ülejäänud väärtused lubatud komplektist
