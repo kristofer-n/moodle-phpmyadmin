@@ -186,10 +186,10 @@ WHERE c.id IS NULL;
 ## 🗂️ Andmekogused
 
 Skript genereerib:
-- **Kursused (courses)**: 100-500 kirjet
+- **Kursused (courses)**: 2,000,000 kirjet
 - **Kasutajad (users)**: 2,000,000 kirjet  
-- **Kursuse manused (course_attachments)**: 10,000-50,000 kirjet
-- **Kasutaja kursused (user_courses)**: 5,000,000-10,000,000 kirjet
+- **Kursuse manused (course_attachments)**: 2,000,000 kirjet
+- **Kasutaja kursused (user_courses)**: 2,000,000 kirjet
 
 ## 🐛 Tõrkeotsing
 
