@@ -20,8 +20,11 @@ Andmed on juhuslikud, aga ehtsa formaadiga: nimed, e-mailid, failinimed, hinned.
 
 2️⃣ Failide paigutus
 /home/student/sqlwork/
+
 ├── bulk_fill_moodle.py
+
 └── schema.sql
+
 Veendu, et failid on konteineris või Linuxi masinas sama kataloogi all.
 
 3️⃣ MariaDB seadistamine
