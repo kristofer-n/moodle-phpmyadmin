@@ -9,7 +9,7 @@ Skript genereerib:
 
 Andmed on juhuslikud, aga ehtsa formaadiga: nimed, e-mailid, failinimed, hinned.
 
-1️⃣ Eeltingimused
+### 1️⃣ Eeltingimused
 
 1. Operatsioonisüsteem: Linux või Docker (Alpine Linux testitud).
 2. MariaDB: vähemalt 10.4.32
@@ -18,7 +18,7 @@ Andmed on juhuslikud, aga ehtsa formaadiga: nimed, e-mailid, failinimed, hinned.
    Dockeris võib kasutada virtualenv või Dockerfile'i lahendust.
 5. Andmebaasi kasutaja: skript vajab kasutajat, kellel on täisõigused moodle andmebaasile.
 
-2️⃣ Failide paigutus
+### 2️⃣ Failide paigutus
 /home/student/sqlwork/
 
 ├── bulk_fill_moodle.py
@@ -27,7 +27,7 @@ Andmed on juhuslikud, aga ehtsa formaadiga: nimed, e-mailid, failinimed, hinned.
 
 Veendu, et failid on konteineris või Linuxi masinas sama kataloogi all.
 
-3️⃣ MariaDB seadistamine
+### 3️⃣ MariaDB seadistamine
 1. Käivita MariaDB:
 `sudo systemctl start mariadb`
 või Dockeris: `docker run --name mariadb -e MYSQL_ROOT_PASSWORD=mypassword -d mariadb:10.4`
@@ -45,7 +45,7 @@ või Dockeris: `docker run --name mariadb -e MYSQL_ROOT_PASSWORD=mypassword -d m
         FLUSH PRIVILEGES;
 
 
-4️⃣ Skripti seadistamine
+### 4️⃣ Skripti seadistamine
 1. Muuda DB_CONFIG skriptis:
 
         DB_CONFIG = {
@@ -65,14 +65,14 @@ või Dockeris: `docker run --name mariadb -e MYSQL_ROOT_PASSWORD=mypassword -d m
         docker cp schema.sql <container_id>:/app/
    
 
-5️⃣ Skripti käivitamine
+### 5️⃣ Skripti käivitamine
 
     cd /home/student/sqlwork
     python3 bulk_fill_moodle.py
     
 Skript töötab partiidena, logib edusammu ja väljastab lõpp-raporti.
 
-6️⃣ Lõppkontrollid
+### 6️⃣ Lõppkontrollid
 1. Ridade arvud:
    
         SELECT COUNT(*) FROM courses;
@@ -98,7 +98,7 @@ Skript töötab partiidena, logib edusammu ja väljastab lõpp-raporti.
     Nimede ja e-mailide formaat kontrollitud Fakeriga
     Grades: 60% NULL, ülejäänud väärtused lubatud komplektist
 
-7️⃣ Näpunäited Dockeris / Alpine Linuxis
+### 7️⃣ Näpunäited Dockeris / Alpine Linuxis
 1. Kui Python pakette ei saa installeerida (externally managed), tee virtualenv:
    
         python3 -m venv venv
@@ -111,10 +111,17 @@ Skript töötab partiidena, logib edusammu ja väljastab lõpp-raporti.
         python bulk_fill_moodle.py
 5. Veendu, et MariaDB konteiner on käivitatud ja IP/port õigesti DB_CONFIG-is.
 
-8️⃣ Raporti info, mis skript väljastab
-    Ridade arv iga tabeli kohta - 2 miljon
-    Kogukestus (sekundites) - ~10 minutit
-    FK tervikluse kontroll (orvukirjete arv) - 0 (kõik on korras)
-    Ehtsusinfo:
-        Locale (et_EE / fallback en_US) ja E-mailide ja nimede formaat - nimed ja e-kirjed on kõik userx@example.com (x on number 0 kuni 1999999)
-        Grades ja manuste formaadid - üle 60% on NULL ja ülejäänud valitud hulgast on 2, 3, 4, 5, A või MA. Faili nimed on fakeri poolt kokku pandud suvalised nimed.
+### 8️⃣ Raporti info, mis skript väljastab
+
+Ridade arv iga tabeli kohta - 2 miljon
+    
+Kogukestus (sekundites) - ~10 minutit
+    
+FK tervikluse kontroll (orvukirjete arv) - 0 (kõik on korras)
+
+    
+**Ehtsusinfo:**
+
+   Locale (et_EE / fallback en_US) ja E-mailide ja nimede formaat - nimed ja e-kirjed on kõik userx@example.com (x on number 0 kuni 1999999)
+    
+   Grades ja manuste formaadid - üle 60% on NULL ja ülejäänud valitud hulgast on 2, 3, 4, 5, A või MA. Faili nimed on fakeri poolt kokku pandud suvalised nimed.
