@@ -26,7 +26,7 @@ Veendu, et failid on konteineris või Linuxi masinas sama kataloogi all.
 
 3️⃣ MariaDB seadistamine
 1. Käivita MariaDB:
-`sudo systemctl start mariadb   # Linux host`
+`sudo systemctl start mariadb`
 või Dockeris: `docker run --name mariadb -e MYSQL_ROOT_PASSWORD=mypassword -d mariadb:10.4`
 2. Loo andmebaas ja tabeleid:
    
