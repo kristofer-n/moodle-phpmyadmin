@@ -1,18 +1,99 @@
-Juhised kuidas käivitada "bulk_fill_moodle.py" faili ning täita "moodle" andmebaasis olevad tabelid:
+Skript bulk_fill_moodle.py täidab Moodle andmebaasi suuremahuliste testandmetega.
+Andmebaas peab sisaldama tabeleid, mis on loodud schema.sql abil.
 
-1. Olla kindel, et seadmel on paiguldatud vähemalt MariaDB 10.4.32 (katsetus oli tehtud just 10.4.32 versiooniga, uuemate versioonides pole kindel, et mis tulemuse saavutab).
-2. Mine MariaDB sisse kasutades "mysql -u root" (terminal peaks näitama "MariaDB [(none)]>" kui oled sisse saanud).
-    2.1. Kasuta käsku "SOURCE C:/Users/SinuNimi/Downloads/schema.sql;" (SinuNimi kohta peab panema hetkel kasutuses oleva kasutaja nime, ei tea kuidas see töötaks Linuxil või Dockeris).
-    2.2. Kontrolli käsuga "SHOW DATABASES;", et näha kas sai schema.sql faili sisse.
-    2.3. Kasuta käsku "USE moodle;", et minna "moodle" andmebaasi.
-    2.4. Kontrolliks kasuta käsku "SHOW TABLES;", et näha andmebaasis olevaid tabeleid.
-3. Veendu, et Pythonil on alla laetud mõlemad _faker_ ja _mysql.connector_. Nende jaoks saab kasutada: python -m pip install faker ja python -m pip install mysql-connector-python
-4. Kui eelnevad etapid on õigesti läbitud, siis saab käivitada skripti puhtas Command Prompt aknas (cmd), kasutades käsku: "python bulk_fill_moodle.py", **_ennem oleks vaja liigutada oma asukohta terminalis cd'ga kohta kus sul skript asub (näiteks: "C:/Users/SinuNimi/Downloads")_**
-5. Skript teeb suurem osa asjadest nähtamatult (peale users osa), kui on valmis siis skript ise annab raporti tulemustest, et mitu rida sai tehtud jne.
+Skript genereerib:
+    Kursused (courses)
+    Kasutajad (users)
+    Kursuse manused (course_attachments)
+    Kasutaja kursused (user_courses)
 
+Andmed on juhuslikud, aga ehtsa formaadiga: nimed, e-mailid, failinimed, hinned.
 
-NB! Kui katsetasin skripti, siis juhtus mul, et Windows ei tuvastanud, et Python oli olemas ning pidin Pythoni uuesti paigaldama läbi Microsoft Store äppi kaudu. Lisaks oli probleeme, et Windows ei pannud automaatselt MySQL ega Pythonit PATH'i, kuid ma kahtlen, et see on eriti vajalik.
-PATH muutmiseks Windows platformil _(AINULT KUI KASUTAB SKRIPTI JA SQL FAILI WINDOWS PLATFORMIL)_, peab kasutama **Win + R** ning sisestama **sysdm.cpl**, see avab System Properties akna. Sealt edasi peab minema Advanced kaardi alla ning vajutama **Environment Variables** nupule ja valima Path, siis vajutama **Edit**, kuhu saab lisada faili teekonna kus asuvad mõlemad Python ja MySQL.
-_Näited mõlema jaoks:
-    Python - C:\Users\SinuNimi\AppData\Local\Programs\Python\Python313
-    MySQL  - C:\Program Files\MariaDB 10.4\bin_
+1️⃣ Eeltingimused
+
+1. Operatsioonisüsteem: Linux või Docker (Alpine Linux testitud).
+2. MariaDB: vähemalt 10.4.32
+3. Python: ≥ 3.12
+4. Paketid: python3 -m pip install --user faker mysql-connector-python
+   Dockeris võib kasutada virtualenv või Dockerfile'i lahendust.
+5. Andmebaasi kasutaja: skript vajab kasutajat, kellel on täisõigused moodle andmebaasile.
+
+2️⃣ Failide paigutus
+/home/student/sqlwork/
+├── bulk_fill_moodle.py
+└── schema.sql
+Veendu, et failid on konteineris või Linuxi masinas sama kataloogi all.
+
+3️⃣ MariaDB seadistamine
+1. Käivita MariaDB:
+sudo systemctl start mariadb   # Linux host
+# või Dockeris: docker run --name mariadb -e MYSQL_ROOT_PASSWORD=mypassword -d mariadb:10.4
+2. Loo andmebaas ja tabeleid:
+    mysql -u root -p
+    > CREATE DATABASE moodle;
+    > USE moodle;
+    > SOURCE /home/student/sqlwork/schema.sql;
+3. Loo skriptile sobiv kasutaja (näide):
+    CREATE USER 'moodle_user'@'%' IDENTIFIED BY 'mypassword';
+    GRANT ALL PRIVILEGES ON moodle.* TO 'moodle_user'@'%';
+    FLUSH PRIVILEGES;
+
+4️⃣ Skripti seadistamine
+1. Muuda DB_CONFIG skriptis:
+DB_CONFIG = {
+    "host": "127.0.0.1",  # MariaDB host või konteineri IP
+    "user": "moodle_user",
+    "password": "mypassword",
+    "database": "moodle",
+    "port": 3306,
+    "autocommit": False,
+    "auth_plugin": "mysql_native_password"
+}
+2. Kui skript käib Docker konteineris, veendu, et failid on konteineris (nt /app):
+    docker cp bulk_fill_moodle.py <container_id>:/app/
+    docker cp schema.sql <container_id>:/app/
+
+5️⃣ Skripti käivitamine
+    cd /home/student/sqlwork
+    python3 bulk_fill_moodle.py
+Skript töötab partiidena, logib edusammu ja väljastab lõpp-raporti.
+
+6️⃣ Lõppkontrollid
+1. Ridade arvud:
+    SELECT COUNT(*) FROM courses;
+    SELECT COUNT(*) FROM users;
+    SELECT COUNT(*) FROM course_attachments;
+    SELECT COUNT(*) FROM user_courses;
+2. FK tervikluse kontroll:
+    SELECT COUNT(*) FROM course_attachments ca
+    LEFT JOIN courses c ON ca.course_id = c.id
+    WHERE c.id IS NULL;
+
+    SELECT COUNT(*) FROM user_courses uc
+    LEFT JOIN users u ON uc.user_id = u.id
+    WHERE u.id IS NULL;
+
+    SELECT COUNT(*) FROM user_courses uc
+    LEFT JOIN courses c ON uc.course_id = c.id
+    WHERE c.id IS NULL;
+3. Ehtsus:
+    Nimede ja e-mailide formaat kontrollitud Fakeriga
+    Grades: 60% NULL, ülejäänud väärtused lubatud komplektist
+
+7️⃣ Näpunäited Dockeris / Alpine Linuxis
+1. Kui Python pakette ei saa installeerida (externally managed), tee virtualenv:
+    python3 -m venv venv
+    source venv/bin/activate
+    python -m pip install --upgrade pip
+    pip install faker mysql-connector-python
+2. Käivita skript virtualenv-ist:
+    python bulk_fill_moodle.py
+3. Veendu, et MariaDB konteiner on käivitatud ja IP/port õigesti DB_CONFIG-is.
+
+8️⃣ Raporti info, mis skript väljastab
+    Ridade arv iga tabeli kohta - 2 miljon
+    Kogukestus (sekundites) - ~10 minutit
+    FK tervikluse kontroll (orvukirjete arv) - 0 (kõik on korras)
+    Ehtsusinfo:
+        Locale (et_EE / fallback en_US) ja E-mailide ja nimede formaat - nimed ja e-kirjed on kõik userx@example.com (x on number 0 kuni 1999999)
+        Grades ja manuste formaadid - üle 60% on NULL ja ülejäänud valitud hulgast on 2, 3, 4, 5, A või MA. Faili nimed on fakeri poolt kokku pandud suvalised nimed.
