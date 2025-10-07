@@ -29,66 +29,84 @@ Veendu, et failid on konteineris või Linuxi masinas sama kataloogi all.
 `sudo systemctl start mariadb   # Linux host`
 või Dockeris: `docker run --name mariadb -e MYSQL_ROOT_PASSWORD=mypassword -d mariadb:10.4`
 2. Loo andmebaas ja tabeleid:
-    `mysql -u root -p`
-    `CREATE DATABASE moodle;`
-    `USE moodle;`
-    `SOURCE /home/student/sqlwork/schema.sql;`
-3. Loo skriptile sobiv kasutaja (näide):
-    `CREATE USER 'moodle_user'@'%' IDENTIFIED BY 'mypassword';`
-    `GRANT ALL PRIVILEGES ON moodle.* TO 'moodle_user'@'%';`
-    `FLUSH PRIVILEGES;`
+   
+        mysql -u root -p
+        CREATE DATABASE moodle;
+        USE moodle;
+        SOURCE /home/student/sqlwork/schema.sql;
+   
+4. Loo skriptile sobiv kasutaja (näide):
+   
+        CREATE USER 'moodle_user'@'%' IDENTIFIED BY 'mypassword';
+        GRANT ALL PRIVILEGES ON moodle.* TO 'moodle_user'@'%';
+        FLUSH PRIVILEGES;
+
 
 4️⃣ Skripti seadistamine
 1. Muuda DB_CONFIG skriptis:
-`DB_CONFIG = {`
-    `"host": "127.0.0.1",  # MariaDB host või konteineri IP`
-    `"user": "moodle_user",`
-    `"password": "mypassword",`
-    `"database": "moodle",`
-    `"port": 3306,`
-    `"autocommit": False,`
-    `"auth_plugin": "mysql_native_password"`
-`}`
-2. Kui skript käib Docker konteineris, veendu, et failid on konteineris (nt /app):
-    `docker cp bulk_fill_moodle.py <container_id>:/app/`
-    `docker cp schema.sql <container_id>:/app/`
+
+        DB_CONFIG = {
+            "host": "127.0.0.1",  # MariaDB host või konteineri IP
+            "user": "moodle_user",
+            "password": "mypassword",
+            "database": "moodle",
+            "port": 3306,
+            "autocommit": False,
+            "auth_plugin": "mysql_native_password"
+        }
+
+
+3. Kui skript käib Docker konteineris, veendu, et failid on konteineris (nt /app):
+   
+        docker cp bulk_fill_moodle.py <container_id>:/app/
+        docker cp schema.sql <container_id>:/app/
+   
 
 5️⃣ Skripti käivitamine
-    `cd /home/student/sqlwork`
-    `python3 bulk_fill_moodle.py`
+
+    cd /home/student/sqlwork
+    python3 bulk_fill_moodle.py
+    
 Skript töötab partiidena, logib edusammu ja väljastab lõpp-raporti.
 
 6️⃣ Lõppkontrollid
 1. Ridade arvud:
-    `SELECT COUNT(*) FROM courses;`
-    `SELECT COUNT(*) FROM users;`
-    `SELECT COUNT(*) FROM course_attachments;`
-    `SELECT COUNT(*) FROM user_courses;`
-2. FK tervikluse kontroll:
-    `SELECT COUNT(*) FROM course_attachments ca`
-    `LEFT JOIN courses c ON ca.course_id = c.id`
-    `WHERE c.id IS NULL;`
+   
+        SELECT COUNT(*) FROM courses;
+        SELECT COUNT(*) FROM users;
+        SELECT COUNT(*) FROM course_attachments;
+        SELECT COUNT(*) FROM user_courses;
 
-    `SELECT COUNT(*) FROM user_courses uc`
-    `LEFT JOIN users u ON uc.user_id = u.id`
-    `WHERE u.id IS NULL;`
+3. FK tervikluse kontroll:
+   
+        SELECT COUNT(*) FROM course_attachments ca
+        LEFT JOIN courses c ON ca.course_id = c.id
+        WHERE c.id IS NULL;
 
-    `SELECT COUNT(*) FROM user_courses uc`
-    `LEFT JOIN courses c ON uc.course_id = c.id`
-    `WHERE c.id IS NULL;`
-3. Ehtsus:
+        SELECT COUNT(*) FROM user_courses uc
+        LEFT JOIN users u ON uc.user_id = u.id
+        WHERE u.id IS NULL;
+
+        SELECT COUNT(*) FROM user_courses uc
+        LEFT JOIN courses c ON uc.course_id = c.id
+        WHERE c.id IS NULL;
+   
+5. Ehtsus:
     Nimede ja e-mailide formaat kontrollitud Fakeriga
     Grades: 60% NULL, ülejäänud väärtused lubatud komplektist
 
 7️⃣ Näpunäited Dockeris / Alpine Linuxis
 1. Kui Python pakette ei saa installeerida (externally managed), tee virtualenv:
-    `python3 -m venv venv`
-    `source venv/bin/activate`
-    `python -m pip install --upgrade pip`
-    `pip install faker mysql-connector-python`
-2. Käivita skript virtualenv-ist:
-    `python bulk_fill_moodle.py`
-3. Veendu, et MariaDB konteiner on käivitatud ja IP/port õigesti DB_CONFIG-is.
+   
+        python3 -m venv venv
+        source venv/bin/activate
+        python -m pip install --upgrade pip
+        pip install faker mysql-connector-python
+   
+3. Käivita skript virtualenv-ist:
+   
+        python bulk_fill_moodle.py
+5. Veendu, et MariaDB konteiner on käivitatud ja IP/port õigesti DB_CONFIG-is.
 
 8️⃣ Raporti info, mis skript väljastab
     Ridade arv iga tabeli kohta - 2 miljon
