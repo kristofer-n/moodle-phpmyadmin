@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:10.11
+    container_name: moodle-mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: myrootpassword
+      MYSQL_DATABASE: moodle
+      MYSQL_USER: moodle_user
+      MYSQL_PASSWORD: mypassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./scripts/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    networks:
+      - moodle-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  python-app:
+    image: python:3.12-alpine
+    container_name: moodle-python
+    working_dir: /app
+    volumes:
+      - ./scripts:/app
+    networks:
+      - moodle-network
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    command: >
+      sh -c "
+        apk add --no-cache mariadb-connector-c-dev build-base &&
+        pip install faker mysql-connector-python &&
+        echo 'Waiting for database to be ready...' &&
+        sleep 15 &&
+        python bulk_fill_moodle.py
+      "
+
+volumes:
+  mariadb_data:
+
+networks:
+  moodle-network:
+    driver: bridge
