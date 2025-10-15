@@ -13,9 +13,9 @@ from datetime import datetime
 
 # ========== DB SEADISTUS ==========
 DB_CONFIG = {
-    "host": "127.0.0.1",
-    "user": "root",
-    "password": "",
+    "host": "moodle-mariadb",
+    "user": "moodle_user",
+    "password": "mypassword",
     "database": "moodle",
     "port": 3306,
     "autocommit": False,
